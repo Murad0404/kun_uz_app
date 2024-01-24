@@ -22,9 +22,9 @@ public class ArticleTypeService {
         }
         ArticleTypeEntity articleTypeEntity = new ArticleTypeEntity();
         articleTypeEntity.setName_uz(articleTypeDTO.getName_uz());
-        articleTypeEntity.setName_ru(articleTypeEntity.getName_ru());
-        articleTypeEntity.setName_en(articleTypeEntity.getName_en());
-        articleTypeEntity.setOrder_number(articleTypeEntity.getOrder_number());
+        articleTypeEntity.setName_ru(articleTypeDTO.getName_ru());
+        articleTypeEntity.setName_en(articleTypeDTO.getName_en());
+        articleTypeEntity.setOrder_number(articleTypeDTO.getOrder_number());
         articleTypeRepository.save(articleTypeEntity);
     }
 
@@ -58,27 +58,18 @@ public class ArticleTypeService {
             throw new AppBadException("ushbu id li ArticleTypeEntity yo'q");
         }
         ArticleTypeEntity articleTypeEntity = optionalArticleTypeEntity.get();
-        ArticleTypeDTO articleTypeDTO = new ArticleTypeDTO();
-        articleTypeDTO.setId(articleTypeEntity.getId());
-        articleTypeDTO.setName_uz(articleTypeEntity.getName_uz());
-        articleTypeDTO.setName_ru(articleTypeEntity.getName_ru());
-        articleTypeDTO.setName_en(articleTypeEntity.getName_en());
-        articleTypeDTO.setVisible(articleTypeEntity.getVisible());
-        articleTypeDTO.setCreatedDate(articleTypeEntity.getCreatedDate());
-        articleTypeDTO.setUpdatedDate(articleTypeEntity.getUpdatedDate());
-        articleTypeDTO.setOrder_number(articleTypeEntity.getOrder_number());
-        return articleTypeDTO;
+        return toDTO(articleTypeEntity);
     }
     public ArticleTypeDTO updateById(Integer id,ArticleTypeDTO articleTypeDTO) {
         Optional<ArticleTypeEntity> optionalArticleType = articleTypeRepository.findById(id);
         if (optionalArticleType.isEmpty()){
             throw new AppBadException("bunday id li ArticleTypeEntity yo'q ");
         }
-        ArticleTypeEntity articleTypeEntity = new ArticleTypeEntity();
+        ArticleTypeEntity articleTypeEntity = optionalArticleType.get();
         articleTypeEntity.setName_uz(articleTypeDTO.getName_uz());
-        articleTypeEntity.setName_ru(articleTypeEntity.getName_ru());
-        articleTypeEntity.setName_en(articleTypeEntity.getName_en());
-        articleTypeEntity.setOrder_number(articleTypeEntity.getOrder_number());
+        articleTypeEntity.setName_ru(articleTypeDTO.getName_ru());
+        articleTypeEntity.setName_en(articleTypeDTO.getName_en());
+        articleTypeEntity.setOrder_number(articleTypeDTO.getOrder_number());
         articleTypeRepository.save(articleTypeEntity);
         return articleTypeDTO;
     }

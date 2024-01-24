@@ -13,7 +13,7 @@ public class ArticleTypeController {
     private ArticleTypeService articleTypeService;
 
     @PostMapping
-    public void Create(ArticleTypeDTO articleTypeDTO) {
+    public void Create(@RequestBody ArticleTypeDTO articleTypeDTO) {
        articleTypeService.create(articleTypeDTO);
     }
 
