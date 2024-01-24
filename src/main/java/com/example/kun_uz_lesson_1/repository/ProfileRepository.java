@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface ProfileRepository extends JpaRepository<ProfileEntity, Integer> {
 
     Optional<ProfileEntity> findByEmail(String email);
-    Optional<ProfileEntity> findByEmaileAndPassword(String email,String password);
+    Optional<ProfileEntity> findByEmailAndPassword(String email,String password);
 }

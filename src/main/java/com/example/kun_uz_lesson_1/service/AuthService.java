@@ -22,11 +22,10 @@ public class AuthService {
      * bo'lmasa AppBadException tashlaydi
      * */
     public ProfileDTO auth(AuthDTO authDTO) {
-       Optional<ProfileEntity> optionalProfile = profileRepository.findByEmaileAndPassword(authDTO.getEmail(), MD5Util.encode(authDTO.getPassword()));
+       Optional<ProfileEntity> optionalProfile = profileRepository.findByEmailAndPassword(authDTO.getEmail(),MD5Util.encode(authDTO.getPassword()));
         if (optionalProfile.isEmpty()){
             throw new AppBadException("Emeil or Password is wrong");
         }
-
         ProfileEntity profileEntity = optionalProfile.get();
         ProfileDTO profileDTO = new ProfileDTO();
         profileDTO.setName(profileEntity.getName());
