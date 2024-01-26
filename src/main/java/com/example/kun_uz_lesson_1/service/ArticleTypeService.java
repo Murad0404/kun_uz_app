@@ -1,10 +1,17 @@
 package com.example.kun_uz_lesson_1.service;
 
 import com.example.kun_uz_lesson_1.dto.ArticleTypeDTO;
+import com.example.kun_uz_lesson_1.dto.RegionDTO;
 import com.example.kun_uz_lesson_1.entity.ArticleTypeEntity;
+import com.example.kun_uz_lesson_1.entity.RegionEntity;
+import com.example.kun_uz_lesson_1.enums.AppLanguage;
 import com.example.kun_uz_lesson_1.exp.AppBadException;
 import com.example.kun_uz_lesson_1.repository.ArticleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -16,15 +23,15 @@ public class ArticleTypeService {
     @Autowired
     private ArticleTypeRepository articleTypeRepository;
     public void create(ArticleTypeDTO articleTypeDTO) {
-        Optional<ArticleTypeEntity> optionalArticleType = articleTypeRepository.findAllByOrder_number(articleTypeDTO.getOrder_number());
-        if (optionalArticleType.isEmpty()) {
+        Optional<ArticleTypeEntity> optionalArticleType = articleTypeRepository.findAllByOrderNumber(articleTypeDTO.getOrder_number());
+        if (optionalArticleType.isPresent()) {
             throw new AppBadException("Order_number is wrong");
         }
         ArticleTypeEntity articleTypeEntity = new ArticleTypeEntity();
         articleTypeEntity.setName_uz(articleTypeDTO.getName_uz());
         articleTypeEntity.setName_ru(articleTypeDTO.getName_ru());
         articleTypeEntity.setName_en(articleTypeDTO.getName_en());
-        articleTypeEntity.setOrder_number(articleTypeDTO.getOrder_number());
+        articleTypeEntity.setOrderNumber(articleTypeDTO.getOrder_number());
         articleTypeRepository.save(articleTypeEntity);
     }
 
@@ -37,7 +44,7 @@ public class ArticleTypeService {
         articleTypeDTO.setVisible(articleTypeEntity.getVisible());
         articleTypeDTO.setCreatedDate(articleTypeEntity.getCreatedDate());
         articleTypeDTO.setUpdatedDate(articleTypeEntity.getUpdatedDate());
-        articleTypeDTO.setOrder_number(articleTypeEntity.getOrder_number());
+        articleTypeDTO.setOrder_number(articleTypeEntity.getOrderNumber());
         return articleTypeDTO;
     }
 
@@ -47,6 +54,19 @@ public class ArticleTypeService {
         if (!articleTypeEntities.isEmpty()){
             for (ArticleTypeEntity articleType : articleTypeEntities){
                articleTypeDTOS.add(toDTO(articleType));
+            }
+            return articleTypeDTOS;
+        }
+        throw new AppBadException("ArticleTypeEntity yo'q");
+    }
+
+    public List<ArticleTypeDTO> getAllPage(Integer page,Integer size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<ArticleTypeEntity> articleTypeEntities = articleTypeRepository.findAll(pageable);
+        List<ArticleTypeDTO> articleTypeDTOS = new LinkedList<>();
+        if (!articleTypeEntities.isEmpty()){
+            for (ArticleTypeEntity articleType : articleTypeEntities){
+                articleTypeDTOS.add(toDTO(articleType));
             }
             return articleTypeDTOS;
         }
@@ -69,7 +89,7 @@ public class ArticleTypeService {
         articleTypeEntity.setName_uz(articleTypeDTO.getName_uz());
         articleTypeEntity.setName_ru(articleTypeDTO.getName_ru());
         articleTypeEntity.setName_en(articleTypeDTO.getName_en());
-        articleTypeEntity.setOrder_number(articleTypeDTO.getOrder_number());
+        articleTypeEntity.setOrderNumber(articleTypeDTO.getOrder_number());
         articleTypeRepository.save(articleTypeEntity);
         return articleTypeDTO;
     }
@@ -81,5 +101,23 @@ public class ArticleTypeService {
         catch (AppBadException e){
             return false;
         }
+    }
+
+    public List<ArticleTypeDTO> getByLang(AppLanguage lang) {
+        Iterable<ArticleTypeEntity> entityList = articleTypeRepository.findAll();
+
+        List<ArticleTypeDTO> dtoList = new LinkedList<>();
+
+        for (ArticleTypeEntity entity : entityList) {
+            ArticleTypeDTO dto = new ArticleTypeDTO();
+            dto.setId(entity.getId());
+            switch (lang) {
+                case uz -> dto.setName(entity.getName_uz());
+                case ru -> dto.setName(entity.getName_ru());
+                default -> dto.setName(entity.getName_en());
+            }
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 }

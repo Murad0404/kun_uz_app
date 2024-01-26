@@ -11,7 +11,7 @@ import lombok.Data;
 public class ArticleTypeEntity extends BaseEntity{
 
     @Column(nullable = false,unique = true)
-    private  String order_number;
+    private  String orderNumber;
     @Column(nullable = false)
     private String name_uz;
     @Column(nullable = false)

@@ -2,6 +2,7 @@ package com.example.kun_uz_lesson_1.service;
 
 import com.example.kun_uz_lesson_1.dto.RegionDTO;
 import com.example.kun_uz_lesson_1.entity.RegionEntity;
+import com.example.kun_uz_lesson_1.enums.AppLanguage;
 import com.example.kun_uz_lesson_1.exp.AppBadException;
 import com.example.kun_uz_lesson_1.repository.RegionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +17,18 @@ public class RegionService {
     @Autowired
     private RegionRepository regionRepository;
 
-    public void create(RegionDTO regionDTO) {
-        Optional<RegionEntity> optionalRegion = regionRepository.findAllByOrder_number(regionDTO.getOrder_number());
-        if (optionalRegion.isEmpty()) {
+    public RegionDTO create(RegionDTO regionDTO) {
+        Optional<RegionEntity> optionalRegion = regionRepository.findAllByOrderNumber(regionDTO.getOrder_number());
+        if (optionalRegion.isPresent()) {
             throw new AppBadException("Order_number is wrong");
         }
         RegionEntity regionEntity = new RegionEntity();
         regionEntity.setName_uz(regionDTO.getName_uz());
         regionEntity.setName_ru(regionDTO.getName_ru());
         regionEntity.setName_en(regionDTO.getName_en());
-        regionEntity.setOrder_number(regionDTO.getOrder_number());
+        regionEntity.setOrderNumber(regionDTO.getOrder_number());
         regionRepository.save(regionEntity);
+        return regionDTO;
     }
 
     public RegionDTO toDTO(RegionEntity regionEntity){
@@ -38,7 +40,7 @@ public class RegionService {
         regionDTO.setVisible(regionEntity.getVisible());
         regionDTO.setCreatedDate(regionEntity.getCreatedDate());
         regionDTO.setUpdatedDate(regionEntity.getUpdatedDate());
-        regionDTO.setOrder_number(regionEntity.getOrder_number());
+        regionDTO.setOrder_number(regionEntity.getOrderNumber());
         return regionDTO;
     }
 
@@ -70,7 +72,7 @@ public class RegionService {
         regionEntity.setName_uz(regionDTO.getName_uz());
         regionEntity.setName_ru(regionDTO.getName_ru());
         regionEntity.setName_en(regionDTO.getName_en());
-        regionEntity.setOrder_number(regionDTO.getOrder_number());
+        regionEntity.setOrderNumber(regionDTO.getOrder_number());
         regionRepository.save(regionEntity);
         return regionDTO;
     }
@@ -83,4 +85,23 @@ public class RegionService {
             return false;
         }
     }
+
+    public List<RegionDTO> getByLang(AppLanguage lang) {
+        Iterable<RegionEntity> entityList = regionRepository.findAll();
+
+        List<RegionDTO> dtoList = new LinkedList<>();
+
+        for (RegionEntity entity : entityList) {
+            RegionDTO dto = new RegionDTO();
+            dto.setId(entity.getId());
+            switch (lang) {
+                case uz -> dto.setName(entity.getName_uz());
+                case ru -> dto.setName(entity.getName_ru());
+                default -> dto.setName(entity.getName_en());
+            }
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
 }
